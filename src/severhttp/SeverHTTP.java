@@ -15,7 +15,6 @@ public class SeverHTTP {
         System.out.println("Servidor en marcha");
         while(true){
             Socket peticion = getSocket(server);
-            System.out.println("Peticion recibida");
             Thread hiloServer = new Thread(new HiloHTTP(peticion));
             hiloServer.start();
         }                
