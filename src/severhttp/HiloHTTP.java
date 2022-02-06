@@ -23,12 +23,12 @@ public class HiloHTTP implements Runnable {
     public void run() {
         BufferedReader recibir = getReader(conexion);
         OutputStream mandar = getOutput(conexion);
-        System.out.println("Recibe peticion: "+ Thread.currentThread().getName());
+        System.out.println("Recibe peticion: " + Thread.currentThread().getName());
         boolean salir = false;
-        try {
-            while (!salir) {
-                String peticion = leerCabecera(recibir);
-                if (peticion != null) {
+        while (!salir) {
+            String peticion = leerCabecera(recibir);
+            if (peticion != null) {
+                if (!peticion.equals("")) {
                     String archivo = peticion.split(" ")[1];
                     String extension = "html";
                     if (archivo.length() > 1) {
@@ -36,23 +36,21 @@ public class HiloHTTP implements Runnable {
                     }
 
                     tipoDeMensaje(extension, archivo, mandar);
-                }else{
-                    salir = true;
                 }
+            } else {
+                salir = true;
             }
-        } catch (IOException ex) {
-            Logger.getLogger(HiloHTTP.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("Termina servicio: "+ Thread.currentThread().getName());
+        System.out.println("Muere el hilo: " + Thread.currentThread().getName());
     }
 
-    private String leerCabecera(BufferedReader br) throws SocketException, IOException {
+    private String leerCabecera(BufferedReader br) {
         String mensaje;
         String peticion = "";
         int cont = 0;
-        mensaje = br.readLine();
         try {
-            while (!mensaje.equals("")) {
+            mensaje = br.readLine();
+            while (!mensaje.equals("") && mensaje != null) {
                 if (cont == 0) {
                     peticion = mensaje;
                 }
@@ -61,10 +59,16 @@ public class HiloHTTP implements Runnable {
             }
         } catch (NullPointerException e) {
             peticion = null;
+        } catch (SocketException s) {
+//            System.out.println("Socket excepcion al recibir en hilo " + Thread.currentThread().getName());
+            System.out.println("Conexion cerrada");
+            peticion = null;
+        } catch (IOException j) {
+            System.out.println(j);
         }
         System.out.println("Peticion del hilo "
-                + Thread.currentThread().getName()+": "+
-                peticion);
+                + Thread.currentThread().getName() + ": "
+                + peticion);
         return peticion;
     }
 
@@ -115,6 +119,8 @@ public class HiloHTTP implements Runnable {
             osw.write(longitud.getBytes());
             osw.write("\r\n".getBytes());
             osw.write(recurso);
+        } catch (SocketException s) {
+//            System.out.println("Socket excepcion al mandar en hilo " + Thread.currentThread().getName());
         } catch (IOException ex) {
             Logger.getLogger(HiloHTTP.class.getName()).log(Level.SEVERE, null, ex);
         }
