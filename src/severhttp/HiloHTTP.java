@@ -23,7 +23,7 @@ public class HiloHTTP implements Runnable {
     public void run() {
         BufferedReader recibir = getReader(conexion);
         OutputStream mandar = getOutput(conexion);
-        System.out.println("Recibe peticion: " + Thread.currentThread().getName());
+        System.out.println("S inicia: " + Thread.currentThread().getName());
         boolean salir = false;
         while (!salir) {
             String peticion = leerCabecera(recibir);
@@ -60,15 +60,10 @@ public class HiloHTTP implements Runnable {
         } catch (NullPointerException e) {
             peticion = null;
         } catch (SocketException s) {
-//            System.out.println("Socket excepcion al recibir en hilo " + Thread.currentThread().getName());
-            System.out.println("Conexion cerrada");
             peticion = null;
         } catch (IOException j) {
             System.out.println(j);
         }
-        System.out.println("Peticion del hilo "
-                + Thread.currentThread().getName() + ": "
-                + peticion);
         return peticion;
     }
 
