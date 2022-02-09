@@ -11,15 +11,18 @@ public class SeverHTTP {
 
     public static void main(String[] args) {
         int puerto = 8081;
+        //Se crea un ServerSocket
         ServerSocket server = getSS(puerto);
         System.out.println("Servidor en marcha");
+        //Se deja en bucle infinito recibiendo peticiones
         while(true){
             Socket peticion = getSocket(server);
+            //Por cada peticion lanza un hilo que dara servicio al cliente
             Thread hiloServer = new Thread(new HiloHTTP(peticion));
             hiloServer.start();
         }                
     }
-    
+    //Los siguientes metodos permiten limpiar el codigo de try catch
     private static ServerSocket getSS(int puerto){
         ServerSocket s = null;
         try {
